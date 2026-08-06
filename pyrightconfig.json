@@ -1,0 +1,6 @@
+{
+    "extraPaths": [
+        "backend",
+        "demo-repo/src"
+    ]
+}
