@@ -71,7 +71,7 @@ class TestExplainSurvivingMutants:
 
     def test_never_raises_on_any_llm_failure(self, monkeypatch) -> None:
         def exploding_llm(prompt: str) -> str:
-            raise Exception("anything")  # noqa: BLE001 - deliberate
+            raise RuntimeError("anything")
 
         monkeypatch.setattr(service, "_call_llm", exploding_llm)
         contract = mock_contract()

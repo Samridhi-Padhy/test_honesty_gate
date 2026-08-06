@@ -69,9 +69,6 @@ class TestIsValidUsername:
 
 
 class TestGetDisplayName:
-    def test_none_returns_anonymous(self) -> None:
-        assert get_display_name(None) == "anonymous"
-
     def test_user_with_name(self) -> None:
         assert get_display_name({"name": "bob"}) == "bob"
 

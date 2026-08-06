@@ -153,3 +153,17 @@ Create a log.txt of the chat so far. (This file.)
 ================================================================================
 END OF LOG
 ================================================================================
+--------------------------------------------------------------------------------
+TASK 6 — Day 2 Hardening (CI, Linting, Testing, and PR Simulations)
+--------------------------------------------------------------------------------
+Goal: Wire up CI/Pre-commit, prove the gate with simulated PRs, and verify backend coverage.
+
+What was done:
+1. Created .github/workflows/ci.yml with Ruff, pytest, and gate check steps.
+2. Created .pre-commit-config.yaml for Ruff checking and formatting.
+3. Ran ruff across backend/ and mutation_engine/, applying all fixes and resolving a TRY002 violation manually in test_service.py.
+4. Verified 100% backend unit test coverage (58/58 tests passing).
+5. Created branch 'feat/bad-pr-demo' which introduces a bug in get_display_name ('anonymous' -> 'guest') and removes its test. The test suite passes (14/14), but the gate FAILS because the m5 mutant survives.
+6. Created branch 'feat/good-pr-demo' which reverts the bug and strengthens the test suite for both m1 (free shipping) and m5 (display name). The test suite passes and the gate PASSES because all 5 mutants are caught.
+
+Both branches are ready to be pushed to GitHub to simulate the bad and good PRs for the demo.
