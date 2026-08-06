@@ -86,14 +86,14 @@ def build_prompt(operator: str, location: str) -> str:
     return (
         "You are a code-review assistant for a mutation-testing gate. A "
         "mutation survived the test suite, meaning the tests did not detect "
-        "the change. The mutation {description}.\n\n"
+        f"the change. The mutation {description}.\n\n"
         "Write a 1-2 sentence, actionable explanation that names the SPECIFIC "
         "missing assertion a developer should add to catch this mutant. Do "
         "not write generic advice like 'tests are weak'. Do not write code. "
         "Do not suggest fixes to the source. Just name the missing test "
         "assertion.\n\n"
         "Explanation:"
-    ).format(description=description)
+    )
 
 
 def fallback_explanation(operator: str, location: str) -> str:

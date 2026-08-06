@@ -7,9 +7,8 @@ deterministic; the mutation runner and gate aggregation run for real against
 demo-repo.
 """
 
-from fastapi.testclient import TestClient
-
 from api.app import _mock_mode_enabled, app
+from fastapi.testclient import TestClient
 from llm_explainer import service as llm_service
 
 client = TestClient(app)

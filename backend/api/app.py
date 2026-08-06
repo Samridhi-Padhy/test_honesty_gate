@@ -18,7 +18,6 @@ from typing import Any
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-
 from gate_service.gate import run_gate
 from llm_explainer.mock_input import mock_contract
 from llm_explainer.service import explain_surviving_mutants
