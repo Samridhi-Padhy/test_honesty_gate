@@ -1,0 +1,155 @@
+================================================================================
+TEST-HONESTY GATE — SESSION LOG
+================================================================================
+Date: 2026-08-06 (Day 2 midday integration checkpoint)
+Repo: test-honesty-gate (backend/)
+================================================================================
+
+--------------------------------------------------------------------------------
+TASK 1 — Wire the real chain
+--------------------------------------------------------------------------------
+Goal: Replace every mock/stub boundary with the real call.
+
+What was done:
+- backend/backend/api/app.py: the default (non-mock) path now calls the REAL
+  gate_service.run_gate() (which runs the REAL mutation_engine.run_all_mutants())
+  and passes gate_service's REAL raw output to llm_explainer.explain_surviving_mutants().
+- Mock mode (?mock=true / MOCK_MODE env) kept as a permanent fallback, unused by default.
+
+Files changed:
+- backend/backend/api/app.py
+
+--------------------------------------------------------------------------------
+TASK 2 + 3 — Run full chain end-to-end; fix shape mismatches (not logic)
+--------------------------------------------------------------------------------
+Ran the full chain live on demo-repo. Final JSON matches the locked contract
+shape field-for-field.
+
+Two shape mismatches found and fixed (logic untouched):
+1. MUTANT_TIMEOUT_SECONDS raised 1.5s -> 3.0s in
+   backend/backend/mutation_engine/runner.py
+   Reason: pytest subprocess startup alone takes ~1.5s on a cold machine, so the
+   old ceiling caused false timeouts on m2. Still a fail-closed ceiling; real
+   total stays ~7s, under the 10s target.
+2. MUTATION_TARGETS now use relative paths (src/pricing.py) instead of absolute
+   machine-specific paths, so the contract's "location" field matches the locked
+   shape. File: backend/backend/mutation_engine/runner.py
+
+Final end-to-end output (live API, /gate):
+{
+  "pr_id": "local",
+  "verdict": "fail",
+  "mutants_tested": 5,
+  "mutants_caught": 4,
+  "mutants_survived": 1,
+  "results": [
+    {
+      "mutant_id": "m1",
+      "operator": "equality_flip",
+      "location": "src/pricing.py:28",
+      "caught": false,
+      "explanation": "The AI test suite did not catch this equality-flip mutant. Add an assertion that verifies the exact equality boundary (e.g. the value that should be equal) at src/pricing.py:28."
+    },
+    {
+      "mutant_id": "m2",
+      "operator": "boundary_shift",
+      "location": "src/pricing.py:15",
+      "caught": true,
+      "explanation": ""
+    },
+    {
+      "mutant_id": "m3",
+      "operator": "off_by_one",
+      "location": "src/pricing.py:37",
+      "caught": true,
+      "explanation": ""
+    },
+    {
+      "mutant_id": "m4",
+      "operator": "negate_boolean",
+      "location": "src/pricing.py:48",
+      "caught": true,
+      "explanation": ""
+    },
+    {
+      "mutant_id": "m5",
+      "operator": "drop_null_guard",
+      "location": "src/pricing.py:58",
+      "caught": true,
+      "explanation": ""
+    }
+  ],
+  "duration_ms": 6575
+}
+
+The surviving mutant from demo-repo's deliberately-weak test is m1 (equality_flip),
+as designed.
+
+--------------------------------------------------------------------------------
+TASK 4 — Confirm timing and fail-closed behavior end to end
+--------------------------------------------------------------------------------
+- Full chain (5 mutants + LLM calls) completes in ~6.6-7.2s — predictable.
+- LLM-down in the REAL chain: set GEMINI_API_KEY=invalid-key-for-test, hit live
+  /gate -> HTTP 200, valid contract JSON, templated fallback explanation filled
+  for m1. Verified in the real chain, not just unit tests.
+- Timeout fail-closed in the real chain: injected subprocess.TimeoutExpired into
+  the runner -> verdict "fail", all mutants recorded as survived, explanations
+  still filled, contract shape preserved, no hang.
+
+--------------------------------------------------------------------------------
+TASK 5 — Make the API demo-ready for Ashwika's evening swap
+--------------------------------------------------------------------------------
+Live server running on http://127.0.0.1:8000 (uvicorn, api.app:app), verified:
+- /gate (real chain) and /health return 200 and correct JSON.
+- CORS header Access-Control-Allow-Origin echoes the request origin (verified with
+  Origin: http://localhost:5173).
+- Malformed requests return clean 4xx: POST /gate -> 405, unknown path -> 404,
+  ?mock=sure&x=%zz -> 422. No stack traces.
+
+--------------------------------------------------------------------------------
+TESTS
+--------------------------------------------------------------------------------
+58/58 pass when run sequentially (python -m pytest backend/backend/tests -q, ~70s).
+Added 3 integration tests in backend/backend/tests/test_api.py proving the real
+chain returns the locked shape, fills explanations for survivors only, and reports
+m1 as the sole survivor.
+
+IMPORTANT OPERATIONAL NOTE: DO NOT run two pytest processes concurrently — both the
+runner and the tests mutate/restore the same demo-repo/src/pricing.py, and
+simultaneous runs corrupt it. Run pytest strictly serially. (Two transient test
+failures mid-session were from concurrent launches, not from the code.)
+
+--------------------------------------------------------------------------------
+GIT / PR STATUS
+--------------------------------------------------------------------------------
+Commit 6a2531e on branch feat/day2-integration (4 files: .gitignore, api/app.py,
+mutation_engine/runner.py, tests/test_api.py).
+Pushing to origin FAILED with:
+  403: Permission to 7tanmay7/backend.git denied to hoursgotviral-dev
+-> A human with repo access needs to push the branch and open the PR.
+
+Also flagged: repo has no .github/workflows/ CI and no docs/ folder (contract was
+derived from the locked unit tests across all three services). These are outside
+the agent's lane per AGENTS.md and need sign-off from the owner.
+
+--------------------------------------------------------------------------------
+SUBSEQUENT REQUEST (interrupted) — STRUCTURAL CLEANUP
+--------------------------------------------------------------------------------
+A follow-up task was requested (then interrupted) to restructure the repo to match
+docs/ARCHITECTURE.md:
+- Collapse the duplicate backend/backend/ nesting (git mv up one level).
+- Move demo-repo/ to the repo root (it was wrongly nested under mutation_engine/).
+- Move root-level docs (AGENTS.md, README.md) to their real homes.
+- Fix every broken import/path reference caused by the moves.
+- Verify nothing broke (run tests, gate check, print final git status + tree).
+
+This task was NOT completed — it was interrupted. The current repo still has the
+duplicated backend/backend/ structure and demo-repo/ nested under backend/.
+
+--------------------------------------------------------------------------------
+CURRENT REQUEST
+--------------------------------------------------------------------------------
+Create a log.txt of the chat so far. (This file.)
+================================================================================
+END OF LOG
+================================================================================
