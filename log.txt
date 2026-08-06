@@ -167,3 +167,19 @@ What was done:
 6. Created branch 'feat/good-pr-demo' which reverts the bug and strengthens the test suite for both m1 (free shipping) and m5 (display name). The test suite passes and the gate PASSES because all 5 mutants are caught.
 
 Both branches are ready to be pushed to GitHub to simulate the bad and good PRs for the demo.
+
+--------------------------------------------------------------------------------
+TASK 7 — Hardening Day Tasks 1-3 (Gate Checkpoint #4)
+--------------------------------------------------------------------------------
+Goal: Implement API robustness, custom agents/skills, and verify mock-mode.
+
+What was done:
+1. Modified backend/llm_explainer/service.py to include a 'retry-once' loop on timeout/5xx errors before falling back to the templated response.
+2. Added a global Exception handler to backend/api/app.py that catches unhandled exceptions and returns a clean 500 JSON response instead of a raw stack trace.
+3. Added a FastAPI HTTP middleware to log incoming requests (method, path, status, duration).
+4. Created a custom skill in .agents/skills/generate_mutation_operator/SKILL.md that helps rapidly scaffold new mutation operators and tests.
+5. Created a custom agent in .agents/agents/gate_reviewer/AGENT.md that acts as a code reviewer by running the gate check and summarizing the JSON output into human-readable markdown.
+6. Updated AGENTS_AND_SKILLS.md with a clear, judge-friendly explanation of these custom tools.
+7. Verified that the mock-mode endpoint works cleanly and doesn't hit the real backend pipeline.
+
+All changes committed locally to the current branch.
