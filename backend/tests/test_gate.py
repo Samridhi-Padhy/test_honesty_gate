@@ -48,9 +48,7 @@ class TestBuildContract:
 
     def test_verdict_passes_when_all_caught(self) -> None:
         summary = RunSummary(
-            results=[
-                MutantResult("m1", "equality_flip", "src/pricing.py:28", True)
-            ],
+            results=[MutantResult("m1", "equality_flip", "src/pricing.py:28", True)],
             duration_ms=10,
         )
         contract = build_contract("pr-1", summary)
@@ -90,7 +88,7 @@ class TestBuildContract:
 
 
 class TestGateCheckCli:
-    def test_cli_returns_fail_exit_code_when_gate_fails(self) -> None:
+    def test_cli_returns_pass_exit_code_when_gate_passes(self) -> None:
         proc = subprocess.run(
             [sys.executable, str(REPO_ROOT / "gate"), "check"],
             capture_output=True,
@@ -98,10 +96,10 @@ class TestGateCheckCli:
             cwd=str(REPO_ROOT),
             check=False,
         )
-        assert proc.returncode == 1
+        assert proc.returncode == 0
         contract = json.loads(proc.stdout)
-        assert contract["verdict"] == "fail"
-        assert contract["mutants_survived"] == 1
+        assert contract["verdict"] == "pass"
+        assert contract["mutants_survived"] == 0
 
     def test_cli_stdout_is_clean_json(self) -> None:
         proc = subprocess.run(

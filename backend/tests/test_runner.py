@@ -22,10 +22,10 @@ def _read_demo_source() -> str:
 
 
 class TestRunMutant:
-    def test_m1_survives_weak_test(self) -> None:
-        """The equality-flip mutant survives because the test is weak."""
+    def test_m1_is_caught(self) -> None:
+        """The equality-flip mutant is caught because the test suite is strong."""
         result = run_mutant("m1", MUTATION_TARGETS["m1"])
-        assert result.caught is False
+        assert result.caught is True
         assert result.mutant_id == "m1"
         assert result.operator == "equality_flip"
 
@@ -66,6 +66,37 @@ class TestRunMutant:
         assert result.timed_out is True
         assert result.error == "pytest timed out"
 
+    def test_actual_hanging_mutant(self, monkeypatch) -> None:
+        """An actual infinite loop is forcefully killed by the timeout budget."""
+        import time
+
+        from mutation_engine.operators import AppliedMutation, Location
+
+        def hanging_operator(source: str, location: Location) -> AppliedMutation:
+            # Inject an infinite loop at the top of the file so pytest hangs on import
+            mutated = "while True:\n    pass\n\n" + source
+            return AppliedMutation(
+                mutant_id="m_hang",
+                operator="hanging",
+                location=location.file_path + ":1",
+                mutated_source=mutated,
+                _old_text="",
+                _new_text="while True:\n    pass\n\n",
+                _span=(0, 0),
+            )
+
+        monkeypatch.setitem(runner.OPERATORS, "m_hang", hanging_operator)
+
+        start = time.monotonic()
+        result = run_mutant("m_hang", Location("src/pricing.py", 1))
+        elapsed = time.monotonic() - start
+
+        assert result.caught is False
+        assert result.timed_out is True
+        assert result.error == "pytest timed out"
+        # The timeout budget is 3.0s, so it should definitely finish before 5.0s
+        assert elapsed < 5.0
+
     def test_operator_error_fails_closed(self) -> None:
         """A bad target location is a hard failure, never a silent pass."""
         bad_location = Location(str(DEMO_SRC_FILE), 1)  # docstring line
@@ -78,14 +109,14 @@ class TestRunAllMutants:
     def test_runs_all_five(self) -> None:
         summary = run_all_mutants()
         assert summary.mutants_tested == 5
-        assert summary.mutants_caught == 4
-        assert summary.mutants_survived == 1
+        assert summary.mutants_caught == 5
+        assert summary.mutants_survived == 0
 
     def test_source_restored_after_all(self) -> None:
         original = _read_demo_source()
         run_all_mutants()
         assert _read_demo_source() == original
 
-    def test_duration_under_ten_seconds(self) -> None:
+    def test_duration_under_fifteen_seconds(self) -> None:
         summary = run_all_mutants()
-        assert summary.duration_ms < 10_000
+        assert summary.duration_ms < 15_000

@@ -19,8 +19,8 @@ import time
 from typing import Any
 
 from fastapi import FastAPI, Query, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from gate_service.gate import run_gate
 from llm_explainer.mock_input import mock_contract
 from llm_explainer.service import explain_surviving_mutants
@@ -46,7 +46,9 @@ async def log_requests(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     duration = time.time() - start_time
-    logger.info(f"{request.method} {request.url.path} - {response.status_code} - {duration:.3f}s")
+    logger.info(
+        f"{request.method} {request.url.path} - {response.status_code} - {duration:.3f}s"
+    )
     return response
 
 

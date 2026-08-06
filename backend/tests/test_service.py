@@ -12,7 +12,9 @@ from llm_explainer.service import explain_surviving_mutants
 
 class TestExplainSurvivingMutants:
     def test_fills_explanations_for_surviving_mutants(self, monkeypatch) -> None:
-        monkeypatch.setattr(service, "_call_llm", lambda prompt: "LLM says add an assertion")
+        monkeypatch.setattr(
+            service, "_call_llm", lambda prompt: "LLM says add an assertion"
+        )
         contract = mock_contract()
         result = explain_surviving_mutants(contract)
         for record in result["results"]:
@@ -61,12 +63,21 @@ class TestExplainSurvivingMutants:
         contract = mock_contract()
         result = explain_surviving_mutants(contract)
         assert set(result.keys()) == {
-            "pr_id", "verdict", "mutants_tested", "mutants_caught",
-            "mutants_survived", "results", "duration_ms",
+            "pr_id",
+            "verdict",
+            "mutants_tested",
+            "mutants_caught",
+            "mutants_survived",
+            "results",
+            "duration_ms",
         }
         for record in result["results"]:
             assert set(record.keys()) == {
-                "mutant_id", "operator", "location", "caught", "explanation",
+                "mutant_id",
+                "operator",
+                "location",
+                "caught",
+                "explanation",
             }
 
     def test_never_raises_on_any_llm_failure(self, monkeypatch) -> None:

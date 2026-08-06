@@ -21,18 +21,11 @@ OPERATOR_DESCRIPTIONS: dict[str, str] = {
         "changed an equality check (==) to an inequality (!=) at {location}"
     ),
     "boundary_shift": (
-        "shifted a strict less-than boundary (<) to a non-strict one (<=) "
-        "at {location}"
+        "shifted a strict less-than boundary (<) to a non-strict one (<=) at {location}"
     ),
-    "off_by_one": (
-        "shifted a loop or index bound by one (off-by-one) at {location}"
-    ),
-    "negate_boolean": (
-        "negated a boolean return value (added 'not') at {location}"
-    ),
-    "drop_null_guard": (
-        "removed a null/None guard check at {location}"
-    ),
+    "off_by_one": ("shifted a loop or index bound by one (off-by-one) at {location}"),
+    "negate_boolean": ("negated a boolean return value (added 'not') at {location}"),
+    "drop_null_guard": ("removed a null/None guard check at {location}"),
 }
 
 # The specific missing assertion each operator type should be tested for.

@@ -65,8 +65,9 @@ def _call_llm(prompt: str) -> str:
         }
     for attempt in range(2):
         try:
-            resp = requests.post(url, json=payload, headers=headers,
-                                 timeout=LLM_TIMEOUT_SECONDS)
+            resp = requests.post(
+                url, json=payload, headers=headers, timeout=LLM_TIMEOUT_SECONDS
+            )
             resp.raise_for_status()
             break
         except requests.RequestException:
