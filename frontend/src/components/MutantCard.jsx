@@ -1,6 +1,8 @@
 function MutantCard({ mutant }) {
+  const survived = !mutant.caught;
+
   return (
-    <div className="mutant-card">
+    <div className={`mutant-card ${survived ? "survived" : "caught"}`}>
       <h3>{mutant.mutant_id}</h3>
 
       <p>
@@ -11,12 +13,13 @@ function MutantCard({ mutant }) {
         <strong>Location:</strong> {mutant.location}
       </p>
 
-      <p>
-        <strong>Status:</strong>{" "}
-        <span className="status">Survived</span>
+      <p className="status">
+        Status: {survived ? "Survived" : "Caught"}
       </p>
 
-      <p>{mutant.explanation}</p>
+      <p>
+        {mutant.explanation || "Test suite caught this mutant."}
+      </p>
     </div>
   );
 }
