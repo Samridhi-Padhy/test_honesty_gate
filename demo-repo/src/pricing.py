@@ -55,5 +55,6 @@ def get_display_name(user: dict | None) -> str:
     It is written as a single-line guard so that dropping the line leaves
     valid code that behaves differently (an AttributeError on None).
     """
-    if user is None: return "anonymous"
+    if user is None:
+        return "anonymous"
     return user.get("name", "anonymous")
