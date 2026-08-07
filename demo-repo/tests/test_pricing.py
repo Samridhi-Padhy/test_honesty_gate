@@ -6,7 +6,6 @@ This gives the test-honesty gate something real to catch.
 """
 
 import pytest
-
 from pricing import (
     apply_discount,
     get_display_name,
