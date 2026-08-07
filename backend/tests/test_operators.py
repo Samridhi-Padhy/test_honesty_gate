@@ -6,7 +6,6 @@ against a known-bad fixture that lacks the target construct.
 """
 
 import pytest
-
 from mutation_engine.operators import (
     OPERATORS,
     Location,

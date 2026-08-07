@@ -50,7 +50,7 @@ class AppliedMutation:
         return (
             self.mutated_source[:start]
             + self._old_text
-            + self.mutated_source[start + len(self._new_text):]
+            + self.mutated_source[start + len(self._new_text) :]
         )
 
 
@@ -82,7 +82,7 @@ def equality_flip(source: str, location: Location) -> AppliedMutation:
             f"no '==' found on {location.file_path}:{location.line}"
         )
     span = (idx, idx + 2)
-    mutated = source[: span[0]] + "!=" + source[span[1]:]
+    mutated = source[: span[0]] + "!=" + source[span[1] :]
     return AppliedMutation(
         mutant_id="m1",
         operator="equality_flip",
@@ -103,7 +103,7 @@ def boundary_shift(source: str, location: Location) -> AppliedMutation:
             f"no '<' found on {location.file_path}:{location.line}"
         )
     span = (idx, idx + 1)
-    mutated = source[: span[0]] + "<=" + source[span[1]:]
+    mutated = source[: span[0]] + "<=" + source[span[1] :]
     return AppliedMutation(
         mutant_id="m2",
         operator="boundary_shift",
@@ -142,10 +142,10 @@ def off_by_one(source: str, location: Location) -> AppliedMutation:
         raise OperatorTargetError(
             f"range argument '{arg}' is not an integer literal or simple name"
         )
-    old_text = source[range_idx: close_paren + 1]
+    old_text = source[range_idx : close_paren + 1]
     new_text = f"range({new_arg})"
     span = (range_idx, close_paren + 1)
-    mutated = source[: span[0]] + new_text + source[span[1]:]
+    mutated = source[: span[0]] + new_text + source[span[1] :]
     return AppliedMutation(
         mutant_id="m3",
         operator="off_by_one",
@@ -179,7 +179,7 @@ def negate_boolean(source: str, location: Location) -> AppliedMutation:
     old_text = source[expr_start:expr_end]
     new_text = f"not ({expr})"
     span = (expr_start, expr_end)
-    mutated = source[: span[0]] + new_text + source[span[1]:]
+    mutated = source[: span[0]] + new_text + source[span[1] :]
     return AppliedMutation(
         mutant_id="m4",
         operator="negate_boolean",
@@ -202,7 +202,7 @@ def drop_null_guard(source: str, location: Location) -> AppliedMutation:
     old_text = line_text
     new_text = ""
     span = (start, end)
-    mutated = source[: start] + new_text + source[end:]
+    mutated = source[:start] + new_text + source[end:]
     return AppliedMutation(
         mutant_id="m5",
         operator="drop_null_guard",

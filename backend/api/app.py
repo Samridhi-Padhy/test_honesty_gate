@@ -13,12 +13,14 @@ results -> llm_explainer fills in explanations for surviving mutants.
 
 from __future__ import annotations
 
+import logging
 import os
+import time
 from typing import Any
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 from gate_service.gate import run_gate
 from llm_explainer.mock_input import mock_contract
 from llm_explainer.service import explain_surviving_mutants
@@ -33,6 +35,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+logger = logging.getLogger("api")
+logging.basicConfig(level=logging.INFO)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    duration = time.time() - start_time
+    logger.info(
+        f"{request.method} {request.url.path} - {response.status_code} - {duration:.3f}s"
+    )
+    return response
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Internal Error: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"error": True, "detail": str(exc)},
+    )
 
 
 def _mock_mode_enabled(mock_param: bool | None) -> bool:

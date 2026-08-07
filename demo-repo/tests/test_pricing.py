@@ -33,14 +33,14 @@ class TestApplyDiscount:
 
 
 class TestIsEligibleForFreeShipping:
-    def test_weak_smoke_test(self) -> None:
-        """Deliberately weak: calls the function but asserts nothing.
+    def test_eligible_at_exactly_50(self) -> None:
+        assert is_eligible_for_free_shipping(50.0) is True
 
-        This is the ONLY test covering ``is_eligible_for_free_shipping``,
-        and it passes regardless of whether the equality check is correct.
-        The ``== -> !=`` mutant therefore survives the suite.
-        """
-        is_eligible_for_free_shipping(50.0)
+    def test_ineligible_below_50(self) -> None:
+        assert is_eligible_for_free_shipping(49.99) is False
+
+    def test_ineligible_above_50(self) -> None:
+        assert is_eligible_for_free_shipping(50.01) is False
 
 
 class TestSumFirstN:

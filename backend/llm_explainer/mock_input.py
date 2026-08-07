@@ -44,12 +44,14 @@ def mock_contract() -> dict[str, Any]:
     Returns a deep copy each call so callers (and tests) can mutate the
     result without corrupting the shared module-level fixture.
     """
-    return copy.deepcopy({
-        "pr_id": "mock-pr-1",
-        "verdict": "fail",
-        "mutants_tested": 5,
-        "mutants_caught": 2,
-        "mutants_survived": 3,
-        "results": MOCK_SURVIVING_MUTANTS,
-        "duration_ms": 1830,
-    })
+    return copy.deepcopy(
+        {
+            "pr_id": "mock-pr-1",
+            "verdict": "fail",
+            "mutants_tested": 5,
+            "mutants_caught": 2,
+            "mutants_survived": 3,
+            "results": MOCK_SURVIVING_MUTANTS,
+            "duration_ms": 1830,
+        }
+    )

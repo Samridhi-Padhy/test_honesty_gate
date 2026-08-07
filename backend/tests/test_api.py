@@ -7,9 +7,8 @@ deterministic; the mutation runner and gate aggregation run for real against
 demo-repo.
 """
 
-from fastapi.testclient import TestClient
-
 from api.app import _mock_mode_enabled, app
+from fastapi.testclient import TestClient
 from llm_explainer import service as llm_service
 
 client = TestClient(app)
@@ -21,14 +20,23 @@ class TestMockModeEndpoint:
         assert resp.status_code == 200
         contract = resp.json()
         assert set(contract.keys()) == {
-            "pr_id", "verdict", "mutants_tested", "mutants_caught",
-            "mutants_survived", "results", "duration_ms",
+            "pr_id",
+            "verdict",
+            "mutants_tested",
+            "mutants_caught",
+            "mutants_survived",
+            "results",
+            "duration_ms",
         }
         assert contract["verdict"] == "fail"
         assert contract["mutants_tested"] == 5
         for record in contract["results"]:
             assert set(record.keys()) == {
-                "mutant_id", "operator", "location", "caught", "explanation",
+                "mutant_id",
+                "operator",
+                "location",
+                "caught",
+                "explanation",
             }
 
     def test_mock_mode_empty_explanations(self) -> None:
@@ -71,13 +79,22 @@ class TestRealChainEndpoint:
         assert resp.status_code == 200
         contract = resp.json()
         assert set(contract.keys()) == {
-            "pr_id", "verdict", "mutants_tested", "mutants_caught",
-            "mutants_survived", "results", "duration_ms",
+            "pr_id",
+            "verdict",
+            "mutants_tested",
+            "mutants_caught",
+            "mutants_survived",
+            "results",
+            "duration_ms",
         }
         assert contract["mutants_tested"] == 5
         for record in contract["results"]:
             assert set(record.keys()) == {
-                "mutant_id", "operator", "location", "caught", "explanation",
+                "mutant_id",
+                "operator",
+                "location",
+                "caught",
+                "explanation",
             }
 
     def test_real_chain_fills_explanations_for_survivors(self, monkeypatch) -> None:
@@ -90,13 +107,13 @@ class TestRealChainEndpoint:
             else:
                 assert record["explanation"] != ""
 
-    def test_real_chain_surviving_mutant_is_m1(self, monkeypatch) -> None:
-        """The deliberately-weak test means m1 (equality_flip) survives."""
+    def test_real_chain_all_mutants_caught(self, monkeypatch) -> None:
+        """The strengthened test suite means all mutants are caught."""
         monkeypatch.setattr(llm_service, "_call_llm", lambda prompt: "LLM explanation")
         resp = client.get("/gate")
         contract = resp.json()
         survivors = [r["mutant_id"] for r in contract["results"] if not r["caught"]]
-        assert survivors == ["m1"]
-        assert contract["verdict"] == "fail"
-        assert contract["mutants_survived"] == 1
-        assert contract["mutants_caught"] == 4
+        assert survivors == []
+        assert contract["verdict"] == "pass"
+        assert contract["mutants_survived"] == 0
+        assert contract["mutants_caught"] == 5

@@ -153,3 +153,48 @@ Create a log.txt of the chat so far. (This file.)
 ================================================================================
 END OF LOG
 ================================================================================
+--------------------------------------------------------------------------------
+TASK 6 — Day 2 Hardening (CI, Linting, Testing, and PR Simulations)
+--------------------------------------------------------------------------------
+Goal: Wire up CI/Pre-commit, prove the gate with simulated PRs, and verify backend coverage.
+
+What was done:
+1. Created .github/workflows/ci.yml with Ruff, pytest, and gate check steps.
+2. Created .pre-commit-config.yaml for Ruff checking and formatting.
+3. Ran ruff across backend/ and mutation_engine/, applying all fixes and resolving a TRY002 violation manually in test_service.py.
+4. Verified 100% backend unit test coverage (58/58 tests passing).
+5. Created branch 'feat/bad-pr-demo' which introduces a bug in get_display_name ('anonymous' -> 'guest') and removes its test. The test suite passes (14/14), but the gate FAILS because the m5 mutant survives.
+6. Created branch 'feat/good-pr-demo' which reverts the bug and strengthens the test suite for both m1 (free shipping) and m5 (display name). The test suite passes and the gate PASSES because all 5 mutants are caught.
+
+Both branches are ready to be pushed to GitHub to simulate the bad and good PRs for the demo.
+
+--------------------------------------------------------------------------------
+TASK 7 — Hardening Day Tasks 1-3 (Gate Checkpoint #4)
+--------------------------------------------------------------------------------
+Goal: Implement API robustness, custom agents/skills, and verify mock-mode.
+
+What was done:
+1. Modified backend/llm_explainer/service.py to include a 'retry-once' loop on timeout/5xx errors before falling back to the templated response.
+2. Added a global Exception handler to backend/api/app.py that catches unhandled exceptions and returns a clean 500 JSON response instead of a raw stack trace.
+3. Added a FastAPI HTTP middleware to log incoming requests (method, path, status, duration).
+4. Created a custom skill in .agents/skills/generate_mutation_operator/SKILL.md that helps rapidly scaffold new mutation operators and tests.
+5. Created a custom agent in .agents/agents/gate_reviewer/AGENT.md that acts as a code reviewer by running the gate check and summarizing the JSON output into human-readable markdown.
+6. Updated AGENTS_AND_SKILLS.md with a clear, judge-friendly explanation of these custom tools.
+7. Verified that the mock-mode endpoint works cleanly and doesn't hit the real backend pipeline.
+
+All changes committed locally to the current branch.
+
+--------------------------------------------------------------------------------
+TASK 8 - Final Pre-Submission Polish (Layer-1 Docs, Dependencies, and Branch Alignment)
+--------------------------------------------------------------------------------
+Goal: Complete missing documentation, fix CI requirements, align test suite, and clean up infra.
+
+What was done:
+1. Filled the 5 missing Layer-1 docs: AGENTS.md, README.md, docs/PRD.md, docs/TASKS.md, docs/CONTRACTS.md.
+2. Created backend/requirements.txt and updated .github/workflows/ci.yml to install dependencies using it.
+3. Fixed outdated test expectations in test_runner.py, test_api.py, and test_gate.py so they pass against the good-pr-demo branch.
+4. Removed the lingering backend/backend/ folder.
+5. Created an actual hanging mutant test in test_runner.py using an infinite while-loop, proving fail-closed timeout behavior.
+6. Passed the full backend test suite with 59/59 tests passing, and 18 files reformatted by ruff.
+
+All changes are locally verified and ready to be committed/pushed manually.

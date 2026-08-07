@@ -21,8 +21,13 @@ class TestBuildPrompt:
     def test_prompt_is_distinct_per_operator(self) -> None:
         prompts = {
             op: build_prompt(op, "src/pricing.py:1")
-            for op in ("equality_flip", "boundary_shift", "off_by_one",
-                       "negate_boolean", "drop_null_guard")
+            for op in (
+                "equality_flip",
+                "boundary_shift",
+                "off_by_one",
+                "negate_boolean",
+                "drop_null_guard",
+            )
         }
         # Each prompt must describe its own mutation differently.
         assert len(set(prompts.values())) == 5

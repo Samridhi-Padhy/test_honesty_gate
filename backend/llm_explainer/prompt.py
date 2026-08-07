@@ -21,18 +21,11 @@ OPERATOR_DESCRIPTIONS: dict[str, str] = {
         "changed an equality check (==) to an inequality (!=) at {location}"
     ),
     "boundary_shift": (
-        "shifted a strict less-than boundary (<) to a non-strict one (<=) "
-        "at {location}"
+        "shifted a strict less-than boundary (<) to a non-strict one (<=) at {location}"
     ),
-    "off_by_one": (
-        "shifted a loop or index bound by one (off-by-one) at {location}"
-    ),
-    "negate_boolean": (
-        "negated a boolean return value (added 'not') at {location}"
-    ),
-    "drop_null_guard": (
-        "removed a null/None guard check at {location}"
-    ),
+    "off_by_one": ("shifted a loop or index bound by one (off-by-one) at {location}"),
+    "negate_boolean": ("negated a boolean return value (added 'not') at {location}"),
+    "drop_null_guard": ("removed a null/None guard check at {location}"),
 }
 
 # The specific missing assertion each operator type should be tested for.
@@ -86,14 +79,14 @@ def build_prompt(operator: str, location: str) -> str:
     return (
         "You are a code-review assistant for a mutation-testing gate. A "
         "mutation survived the test suite, meaning the tests did not detect "
-        "the change. The mutation {description}.\n\n"
+        f"the change. The mutation {description}.\n\n"
         "Write a 1-2 sentence, actionable explanation that names the SPECIFIC "
         "missing assertion a developer should add to catch this mutant. Do "
         "not write generic advice like 'tests are weak'. Do not write code. "
         "Do not suggest fixes to the source. Just name the missing test "
         "assertion.\n\n"
         "Explanation:"
-    ).format(description=description)
+    )
 
 
 def fallback_explanation(operator: str, location: str) -> str:
