@@ -73,12 +73,14 @@ class RunSummary:
         return sum(1 for r in self.results if not r.caught)
 
 
-def _read_source() -> str:
-    return DEMO_SRC_FILE.read_text(encoding="utf-8")
+def _read_source(location: Location) -> str:
+    path = DEMO_REPO_DIR / location.file_path
+    return path.read_text(encoding="utf-8")
 
 
-def _write_source(source: str) -> None:
-    DEMO_SRC_FILE.write_text(source, encoding="utf-8")
+def _write_source(location: Location, source: str) -> None:
+    path = DEMO_REPO_DIR / location.file_path
+    path.write_text(source, encoding="utf-8")
 
 
 def _run_pytest() -> tuple[int, float]:
@@ -109,10 +111,10 @@ def run_mutant(mutant_id: str, location: Location) -> MutantResult:
     gate never silently passes.
     """
     operator = OPERATORS[mutant_id]
-    original = _read_source()
+    original = _read_source(location)
     try:
         applied: AppliedMutation = operator(original, location)
-        _write_source(applied.mutated_source)
+        _write_source(location, applied.mutated_source)
         try:
             returncode, _ = _run_pytest()
         except subprocess.TimeoutExpired:
@@ -150,7 +152,7 @@ def run_mutant(mutant_id: str, location: Location) -> MutantResult:
         )
     finally:
         # Always restore the original source, even on failure.
-        _write_source(original)
+        _write_source(location, original)
 
 
 # The five fixed mutation targets in demo-repo/src/pricing.py.
