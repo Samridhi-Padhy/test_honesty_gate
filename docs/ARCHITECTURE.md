@@ -262,7 +262,7 @@ Please see [docs/CONTRACTS.md](./CONTRACTS.md) for the exact locked JSON schema.
 
 | Layer | Choice | Why |
 |---|---|---|
-| Mutation engine / gate service | Python | Fast to write AST-level source mutations; simple subprocess control over test runs |
+| Mutation engine / gate service | Python | Fast to write string-level source mutations; simple subprocess control over test runs |
 | Demo repo under test | Python + `pytest` | Matches mutation engine language; simplest possible mutation-and-rerun loop |
 | LLM explainer | NVIDIA Build / Google AI Studio (Gemini) API | Free tiers, no card required, per the hackathon-provided stack; templated fallback removes hard dependency |
 | API layer | FastAPI | Minimal REST surface, easy to mock, easy to wire into CI as a script |
@@ -270,17 +270,13 @@ Please see [docs/CONTRACTS.md](./CONTRACTS.md) for the exact locked JSON schema.
 | CI/CD | GitHub Actions | Required by the hackathon; gate runs as a required, merge-blocking check |
 | Agent/spec tooling | Cline (VS Code) + GitHub Spec Kit | Human-in-the-loop approval flow; matches recommended hackathon workflow |
 
-## 6. Key Design Decisions
+## 6. Key Design Decisions & Rationale
 
-- **5 hardcoded mutations, not a general mutation engine.** Traditional
-  mutation testing re-runs the full suite per mutant and is slow on real
-  codebases; a live stall during the demo or in CI reads as broken, not
-  thorough. Fixed, fast operators keep total gate runtime predictable.
+- **String-matching mutations instead of AST parsing.** AST parsing often destroys original formatting, comments, and spacing when unparsed back to source code, creating messy diffs. By using exact string-matching and tracking the precise character span, we can apply mutations and then cleanly revert them with a perfect symmetric text replacement, leaving no leftover diffs.
+- **Exactly 5 hardcoded mutations, not a general mutation engine.** Traditional mutation testing dynamically discovers targets, which requires re-running the full test suite hundreds of times per run. This is unacceptably slow for real codebases. By strictly scope-locking to 5 hardcoded operators, we keep the total gate runtime predictable (under 10 seconds), ensuring it remains a fast, blocking check in CI without live-stalling the pull request.
 - **One small demo repo, not arbitrary repos.** Keeps runtime bounded and
   the demo legible to judges in seconds.
-- **LLM does explanation only.** It never generates or fixes code — this
-  keeps the audit trustworthy (it can't "grade its own homework") and keeps
-  the LLM's blast radius small if it fails.
+- **LLM does explanation only (never generates code or tests).** The purpose of the gate is to audit the test suite. If the LLM generates or fixes the tests, it would be "grading its own homework," undermining the integrity of the audit. Furthermore, this fail-closed approach keeps the LLM's blast radius small: if the LLM hallucinates or fails, the gate still correctly blocks the PR and falls back to templated text, rather than breaking the source code.
 - **Explainer has a non-LLM fallback.** The merge gate must never hang or
   silently pass because a third-party LLM API is down or rate-limited.
 - **Mock-mode API.** Lets frontend be developed and debugged in isolation

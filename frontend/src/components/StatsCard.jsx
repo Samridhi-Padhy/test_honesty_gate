@@ -1,10 +1,22 @@
 function StatsCard({ tested, caught, survived, duration }) {
   return (
     <div className="stats">
-      <p>Mutants Tested: {tested}</p>
-      <p>Mutants Caught: {caught}</p>
-      <p>Mutants Survived: {survived}</p>
-      <p>Duration: {duration} ms</p>
+      <p>
+        <span className="stat-label">Mutants Tested</span>
+        <span className="stat-value">{tested}</span>
+      </p>
+      <p>
+        <span className="stat-label">Mutants Caught</span>
+        <span className="stat-value">{caught}</span>
+      </p>
+      <p>
+        <span className="stat-label">Mutants Survived</span>
+        <span className="stat-value">{survived}</span>
+      </p>
+      <p>
+        <span className="stat-label">Duration</span>
+        <span className="stat-value">{duration} ms</span>
+      </p>
     </div>
   );
 }

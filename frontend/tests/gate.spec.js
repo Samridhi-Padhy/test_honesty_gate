@@ -92,3 +92,46 @@ test("error state: shows a retry instead of a blank screen", async ({ page }) =>
   await expect(page.getByTestId("error")).toBeVisible();
   await expect(page.getByTestId("retry")).toBeVisible();
 });
+
+test("error state: clicking retry refetches and renders the verdict", async ({ page }) => {
+  let requestCount = 0;
+  await page.route("**/gate*", (route) => {
+    requestCount++;
+    if (requestCount === 1) {
+      return route.abort("failed");
+    }
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(PASSING_CONTRACT),
+    });
+  });
+
+  await page.goto("/");
+
+  await expect(page.getByTestId("error")).toBeVisible();
+  await page.getByTestId("retry").click();
+
+  const verdict = page.getByTestId("verdict");
+  await expect(verdict).toBeVisible();
+  await expect(verdict).toContainText("Merge allowed");
+});
+
+test("loading state: shows a loading indicator before data resolves", async ({ page }) => {
+  await page.route("**/gate*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(PASSING_CONTRACT),
+    });
+  });
+
+  await page.goto("/");
+
+  const loading = page.getByTestId("loading");
+  await expect(loading).toBeVisible();
+
+  await expect(loading).not.toBeVisible();
+  await expect(page.getByTestId("verdict")).toBeVisible();
+});
