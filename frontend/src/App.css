@@ -58,3 +58,97 @@ header p {
   color: red;
   font-weight: bold;
 }
+/* Verdict states */
+.verdict {
+  padding: 24px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.verdict h2 {
+  margin: 0 0 10px;
+  font-size: 2.2rem;
+}
+
+.verdict-blocked {
+  background-color: #2a0d0d;
+  border: 2px solid #ff2d2d;
+}
+
+.verdict-blocked h2 {
+  color: #ff5c5c;
+}
+
+.verdict-passed {
+  background-color: #0d2a14;
+  border: 2px solid #2dff6f;
+}
+
+.verdict-passed h2 {
+  color: #5cff8f;
+}
+
+.verdict-reason {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin: 0 auto;
+  max-width: 640px;
+}
+
+.verdict-pr {
+  color: #b0b0b0;
+  font-size: 0.95rem;
+}
+
+/* Mutant card states */
+.mutant-card.caught {
+  border: 1px solid #2d7a45;
+  border-left: 6px solid #2dff6f;
+}
+
+.status-survived {
+  color: #ff5c5c;
+  font-weight: bold;
+}
+
+.status-caught {
+  color: #5cff8f;
+  font-weight: bold;
+}
+
+.explanation {
+  line-height: 1.6;
+}
+
+.explanation.muted {
+  color: #909090;
+}
+
+/* Loading and error states */
+.loading {
+  font-size: 1.2rem;
+  color: #b0b0b0;
+}
+
+.error-panel {
+  border: 2px solid #ffb000;
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.error-panel h2 {
+  color: #ffb000;
+  margin-top: 0;
+}
+
+.error-panel button {
+  margin-top: 12px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #ffffff;
+  background: transparent;
+  color: #ffffff;
+}
