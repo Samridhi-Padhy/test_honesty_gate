@@ -1,0 +1,1 @@
+extend-exclude = ["demo-repo", "frontend"]
