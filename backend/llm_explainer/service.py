@@ -56,7 +56,7 @@ def _call_llm(prompt: str) -> str:
             raise RuntimeError("GEMINI_API_KEY is not set")
         url = (
             "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+            f"gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
         )
         headers = {"Content-Type": "application/json"}
         payload = {
