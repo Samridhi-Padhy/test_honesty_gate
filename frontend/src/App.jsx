@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import "./App.css";
 
 import Header from "./components/Header";
@@ -10,31 +11,33 @@ import { fetchGateResult } from "./api/client";
 
 function App() {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchGateResult();
-      setData(result);
+      setData(await fetchGateResult());
     } catch (err) {
       setError(err.message);
+      setData(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   if (loading) {
     return (
       <div className="app">
         <Header />
-        <div>Loading...</div>
+        <p data-testid="loading" className="loading">
+          Running the gate against this pull request. This takes a few seconds.
+        </p>
       </div>
     );
   }
@@ -43,10 +46,13 @@ function App() {
     return (
       <div className="app">
         <Header />
-        <div data-testid="error">Error: {error}</div>
-        <button data-testid="retry" onClick={loadData}>
-          Retry
-        </button>
+        <div data-testid="error" className="error-panel">
+          <h2>Could not reach the gate</h2>
+          <p>{error}</p>
+          <button type="button" onClick={loadData} data-testid="retry">
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -57,7 +63,11 @@ function App() {
     <div className="app">
       <Header />
 
-      <VerdictCard verdict={data.verdict} />
+      <VerdictCard
+        verdict={data.verdict}
+        survived={data.mutants_survived}
+        prId={data.pr_id}
+      />
 
       <StatsCard
         tested={data.mutants_tested}
@@ -66,13 +76,10 @@ function App() {
         duration={data.duration_ms}
       />
 
-      <h2>Mutation Results</h2>
+      <h2>Mutation results</h2>
 
       {data.results.map((mutant) => (
-        <MutantCard
-          key={mutant.mutant_id}
-          mutant={mutant}
-        />
+        <MutantCard key={mutant.mutant_id} mutant={mutant} />
       ))}
     </div>
   );
