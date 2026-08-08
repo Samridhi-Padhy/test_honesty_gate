@@ -18,8 +18,11 @@ import os
 import time
 from typing import Any
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+load_dotenv()
 from fastapi.responses import JSONResponse
 from gate_service.gate import run_gate
 from llm_explainer.mock_input import mock_contract
