@@ -32,7 +32,9 @@ app = FastAPI(title="Test-Honesty Gate API", version="0.1.0")
 
 # CORS configuration
 allowed_origins_str = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173")
-allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+allowed_origins = [
+    origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
