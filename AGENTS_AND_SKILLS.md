@@ -1,6 +1,6 @@
 # Agents and Skills
 
-This document describes the custom agents and skills implemented for the `test-honesty-gate` project. These tools leverage the Antigravity IDE framework to automate workflows and assist human reviewers.
+This document describes the custom agents and skills implemented for the `test-honesty-gate` project. These tools leverage Cline (VS Code) and the GitHub Spec Kit to automate workflows and assist human reviewers.
 
 ## Skills
 
