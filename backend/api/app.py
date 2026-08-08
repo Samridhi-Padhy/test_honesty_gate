@@ -13,6 +13,9 @@ results -> llm_explainer fills in explanations for surviving mutants.
 
 from __future__ import annotations
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 import os
 import time
