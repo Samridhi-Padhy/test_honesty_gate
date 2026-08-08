@@ -2,7 +2,10 @@ function MutantCard({ mutant }) {
   const survived = !mutant.caught;
 
   return (
-    <div className={`mutant-card ${survived ? "survived" : "caught"}`}>
+    <div
+      className={survived ? "mutant-card survived" : "mutant-card caught"}
+      data-testid={`mutant-${mutant.mutant_id}`}
+    >
       <h3>{mutant.mutant_id}</h3>
 
       <p>
@@ -13,13 +16,22 @@ function MutantCard({ mutant }) {
         <strong>Location:</strong> {mutant.location}
       </p>
 
-      <p className="status">
-        Status: {survived ? "Survived" : "Caught"}
+      <p>
+        <strong>Status:</strong>{" "}
+        <span className={survived ? "status-survived" : "status-caught"}>
+          {survived ? "Survived" : "Caught"}
+        </span>
       </p>
 
-      <p>
-        {mutant.explanation || "Test suite caught this mutant."}
-      </p>
+      {survived && mutant.explanation && (
+        <p className="explanation">{mutant.explanation}</p>
+      )}
+
+      {!survived && (
+        <p className="explanation muted">
+          Your tests detected this change. No action needed.
+        </p>
+      )}
     </div>
   );
 }
