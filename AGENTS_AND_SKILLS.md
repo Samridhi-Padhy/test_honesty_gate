@@ -11,7 +11,7 @@ This document describes the custom agents and skills implemented for the `test-h
 The mutation engine relies on a library of operators (e.g., flipping `==` to `!=`, dropping `is None` guards) to test the robustness of the unit tests. As the codebase evolves, new operators must be added to simulate different classes of bugs. This skill provides the IDE agent with exact instructions and code templates to rapidly scaffold a new mutation operator in `backend/mutation_engine/operators.py`, write its associated unit tests, and verify its compilation. 
 
 **Why it exists:** 
-Writing a new AST (Abstract Syntax Tree) mutation operator requires deep knowledge of Python's `ast` module and the project's `@register_operator` decorator pattern. This skill abstracts that boilerplate, allowing developers to simply describe a bug (e.g., "remove return statements") and let the agent generate the complex AST manipulation code safely and consistently.
+Writing a new mutation operator requires adhering to the project's specific string-based pattern, where each operator matches exact source text at a target line and returns an `AppliedMutation` object that can be reverted cleanly with no leftover diff. This skill abstracts that boilerplate, allowing developers to simply describe a bug (e.g., "remove return statements") and let the agent generate the safe, string-based manipulation code consistently.
 
 ## Agents
 
