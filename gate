@@ -11,6 +11,9 @@ and exits 0 (pass) or 1 (fail). All diagnostics go to stderr.
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Make backend/ importable regardless of the current working directory.
 BACKEND_DIR = Path(__file__).resolve().parent / "backend"
 if str(BACKEND_DIR) not in sys.path:
