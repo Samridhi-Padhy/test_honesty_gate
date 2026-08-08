@@ -1,37 +1,25 @@
 ---
-name: generate_mutation_operator
-description: Generates a new mutation operator for the Test-Honesty Gate mutation engine.
+name: verify_mutation_targets
+description: Verifies that MUTATION_TARGETS in runner.py point to the correct line numbers in demo-repo/src/pricing.py.
 ---
 
-# generate_mutation_operator
+# verify_mutation_targets
 
-This skill helps scaffold a new mutation operator for the `test-honesty-gate` project. The mutation engine works by parsing Python ASTs (Abstract Syntax Trees) and injecting subtle bugs to test the robustness of our unit tests.
+This skill verifies that the hardcoded line numbers in `backend/mutation_engine/runner.py`'s `MUTATION_TARGETS` dict still correctly point to the expected logic in `demo-repo/src/pricing.py`. The mutation engine relies on exact text spans rather than AST parsing, so any reflows or edits in `demo-repo/` can silently break the mutations (causing an `OperatorTargetError` if the expected text is not found on that line).
 
 ## Instructions
-When invoked to generate a new mutation operator, follow these steps exactly:
+When invoked to verify mutation targets, follow these steps exactly:
 
-1. **Ask for Operator Details**: 
-   If not already provided, ask the user for the name of the new operator and a brief description of what it mutates (e.g., "change + to -", "remove return statements").
-2. **Implement in `operators.py`**:
-   - Open `backend/mutation_engine/operators.py`.
-   - Create a new function annotated with `@register_operator("your_operator_name")`.
-   - The function must take a single `ast.AST` node and return the mutated node, or return `None` if the node doesn't match the criteria for this mutation.
-   - Example template:
-     ```python
-     @register_operator("your_operator_name")
-     def your_operator_name(node: ast.AST) -> ast.AST | None:
-         # Match condition
-         if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
-             # Mutate logic
-             new_node = copy.deepcopy(node)
-             new_node.op = ast.Sub()
-             return new_node
-         return None
-     ```
-3. **Write Unit Tests**:
-   - Open `backend/tests/test_operators.py`.
-   - Add a new test method testing your operator against valid and invalid AST nodes.
-   - Ensure the test asserts that the AST node was mutated correctly.
+1. **Read `MUTATION_TARGETS`**:
+   Parse the `MUTATION_TARGETS` dictionary in `backend/mutation_engine/runner.py` to get the target line numbers for `m1` through `m5`.
 
-4. **Verify**:
-   - Run `pytest backend/tests/test_operators.py` to ensure the new operator compiles and passes its tests.
+2. **Verify Line Contents in `demo-repo/src/pricing.py`**:
+   Check the specified lines in `demo-repo/src/pricing.py` for the following expected markers, based on the plain-text operator logic in `backend/mutation_engine/operators.py`:
+   - **m1 (equality_flip)**: Target line must contain `==`
+   - **m2 (boundary_shift)**: Target line must contain `<`
+   - **m3 (off_by_one)**: Target line must contain `range(`
+   - **m4 (negate_boolean)**: Target line must contain `return `
+   - **m5 (drop_null_guard)**: Target line must contain `is None`
+
+3. **Report and Fix**:
+   If any line number does not contain its expected marker, it means `demo-repo/src/pricing.py` was edited or reformatted. You must manually find where that logic moved to in `demo-repo/src/pricing.py` and update the line numbers in `backend/mutation_engine/runner.py` to restore the mutations.

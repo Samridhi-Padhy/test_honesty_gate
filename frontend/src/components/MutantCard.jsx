@@ -14,7 +14,7 @@ function MutantCard({ mutant }) {
       </p>
 
       <p className="status">
-        Status: {survived ? "Survived" : "Caught"}
+        Status: <span>{survived ? "Survived" : "Caught"}</span>
       </p>
 
       <p>

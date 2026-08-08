@@ -8,6 +8,7 @@ unexpected error produces a ``fail`` verdict.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from typing import Any
 
@@ -64,9 +65,27 @@ def gate_check_cli(argv: list[str] | None = None) -> int:
 
     try:
         contract = run_gate(pr_id)
+        from llm_explainer.service import explain_surviving_mutants
+        contract = explain_surviving_mutants(contract)
     except Exception as exc:  # noqa: BLE001 - fail closed on any error
         print(f"gate error: {exc!r}", file=sys.stderr)
         return 1
 
     print(json.dumps(contract, indent=2))
+
+    if contract["verdict"] == "fail":
+        step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+        if step_summary:
+            with open(step_summary, "a") as f:
+                f.write(f"## Gate Check Failed\n\n")
+                f.write(f"- **Mutants Tested:** {contract['mutants_tested']}\n")
+                f.write(f"- **Mutants Caught:** {contract['mutants_caught']}\n")
+                f.write(f"- **Mutants Survived:** {contract['mutants_survived']}\n\n")
+                f.write("### Surviving Mutants\n\n")
+                for r in contract["results"]:
+                    if not r["caught"]:
+                        f.write(f"**Operator:** `{r['operator']}`\n")
+                        f.write(f"**Location:** `{r['location']}`\n")
+                        f.write(f"**Explanation:** {r['explanation']}\n\n")
+
     return 0 if contract["verdict"] == "pass" else 1

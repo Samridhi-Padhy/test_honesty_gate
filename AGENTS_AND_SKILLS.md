@@ -4,14 +4,14 @@ This document describes the custom agents and skills implemented for the `test-h
 
 ## Skills
 
-### `generate_mutation_operator`
+### `verify_mutation_targets`
 **Location:** `.agents/skills/generate_mutation_operator/SKILL.md`
 
 **Purpose:** 
-The mutation engine relies on a library of operators (e.g., flipping `==` to `!=`, dropping `is None` guards) to test the robustness of the unit tests. As the codebase evolves, new operators must be added to simulate different classes of bugs. This skill provides the IDE agent with exact instructions and code templates to rapidly scaffold a new mutation operator in `backend/mutation_engine/operators.py`, write its associated unit tests, and verify its compilation. 
+The mutation engine relies on exactly 5 hardcoded operators (e.g., flipping `==` to `!=`, dropping `is None` guards) that target specific line numbers in `demo-repo/` using plain text spans, as defined in `backend/mutation_engine/operators.py`. This skill provides the IDE agent with exact instructions to verify that the `MUTATION_TARGETS` in `backend/mutation_engine/runner.py` still point to the correct logic in `demo-repo/src/pricing.py` after any edits to that file.
 
 **Why it exists:** 
-Writing a new AST (Abstract Syntax Tree) mutation operator requires deep knowledge of Python's `ast` module and the project's `@register_operator` decorator pattern. This skill abstracts that boilerplate, allowing developers to simply describe a bug (e.g., "remove return statements") and let the agent generate the complex AST manipulation code safely and consistently.
+Because the mutation operators operate on plain text spans rather than an AST, any reflows or edits in `demo-repo/` can shift line numbers and silently break the mutations (causing an `OperatorTargetError`). This skill allows the agent to automatically audit and fix the `MUTATION_TARGETS` line mappings to catch lint-reflow traps safely and consistently.
 
 ## Agents
 
