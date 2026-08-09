@@ -23,6 +23,9 @@ const PASSING_CONTRACT = {
     { mutant_id: "m4", operator: "negate_boolean", location: "src/pricing.py:48", caught: true, explanation: "" },
     { mutant_id: "m5", operator: "drop_null_guard", location: "src/pricing.py:58", caught: true, explanation: "" },
   ],
+  per_file: [
+    { file: "src/pricing.py", mutants_tested: 5, mutants_caught: 5, kill_rate: 1.0, threshold: 0.75, passed: true }
+  ],
   duration_ms: 1767,
 };
 
@@ -46,7 +49,30 @@ const FAILING_CONTRACT = {
     { mutant_id: "m4", operator: "negate_boolean", location: "src/pricing.py:48", caught: true, explanation: "" },
     { mutant_id: "m5", operator: "drop_null_guard", location: "src/pricing.py:58", caught: true, explanation: "" },
   ],
+  per_file: [
+    { file: "src/pricing.py", mutants_tested: 5, mutants_caught: 4, kill_rate: 0.8, threshold: 0.75, passed: true },
+  ],
   duration_ms: 1830,
+};
+
+const FAILING_THRESHOLD_CONTRACT = {
+  pr_id: "PR-202",
+  verdict: "fail",
+  mutants_tested: 5,
+  mutants_caught: 5,
+  mutants_survived: 0,
+  results: [
+    { mutant_id: "m1", operator: "equality_flip", location: "src/pricing.py:28", caught: true, explanation: "" },
+    { mutant_id: "m2", operator: "boundary_shift", location: "src/pricing.py:15", caught: true, explanation: "" },
+    { mutant_id: "m3", operator: "off_by_one", location: "src/pricing.py:37", caught: true, explanation: "" },
+    { mutant_id: "m4", operator: "negate_boolean", location: "src/pricing.py:48", caught: true, explanation: "" },
+    { mutant_id: "m5", operator: "drop_null_guard", location: "src/pricing.py:58", caught: true, explanation: "" },
+  ],
+  per_file: [
+    { file: "src/pricing.py", mutants_tested: 5, mutants_caught: 5, kill_rate: 1.0, threshold: 1.0, passed: true },
+    { file: "src/money.py", mutants_tested: 0, mutants_caught: 0, kill_rate: 0.0, threshold: 1.0, passed: false },
+  ],
+  duration_ms: 1900,
 };
 
 async function stubGate(page, body, status = 200) {
@@ -83,6 +109,21 @@ test("fail state: blocks the merge and shows a plain-English reason", async ({ p
   await expect(survivor).toContainText("src/pricing.py:37");
   await expect(survivor).toContainText("Add an assertion for the boundary case");
   await expect(survivor).toHaveClass(/survived/);
+});
+
+test("fail state: blocks the merge because a file missed its threshold, even if no mutants survived overall", async ({ page }) => {
+  await stubGate(page, FAILING_THRESHOLD_CONTRACT);
+  await page.goto("/");
+
+  const verdict = page.getByTestId("verdict");
+  await expect(verdict).toContainText("Merge blocked");
+  await expect(verdict).toHaveClass(/verdict-blocked/);
+
+  const fileRisk = page.getByTestId("file-risk-src/money.py");
+  await expect(fileRisk).toBeVisible();
+  await expect(fileRisk).toContainText("src/money.py");
+  await expect(fileRisk).toContainText("FAIL");
+  await expect(fileRisk).toHaveClass(/verdict-blocked/);
 });
 
 test("error state: shows a retry instead of a blank screen", async ({ page }) => {

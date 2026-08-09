@@ -5,6 +5,7 @@ import "./App.css";
 import Header from "./components/Header";
 import VerdictCard from "./components/VerdictCard";
 import StatsCard from "./components/StatsCard";
+import FileRiskCard from "./components/FileRiskCard";
 import MutantCard from "./components/MutantCard";
 
 import { fetchGateResult } from "./api/client";
@@ -74,6 +75,8 @@ function App() {
         survived={data.mutants_survived}
         duration={data.duration_ms}
       />
+
+      <FileRiskCard perFile={data.per_file} />
 
       <h2>Mutation results</h2>
 

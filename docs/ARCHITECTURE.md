@@ -281,6 +281,8 @@ Please see [docs/CONTRACTS.md](./CONTRACTS.md) for the exact locked JSON schema.
   silently pass because a third-party LLM API is down or rate-limited.
 - **Mock-mode API.** Lets frontend be developed and debugged in isolation
   before and after integration, not just before it.
+- **Per-file risk thresholds.** Instead of a single global kill rate, thresholds can be configured per-file. This is because money-critical logic carries significantly more risk than cosmetic or structural code, and a weak test on financial logic should not be able to hide behind a passing repository average.
+- **Additive schema changes.** The `per_file` thresholds were added as new fields on the existing data contract rather than modifying the core `results` schema. This avoids a breaking schema change, allowing consumers reading only the original v1.0 fields to remain entirely unaffected by the v1.1 updates.
 
 ## 7. Failure Modes and Handling
 

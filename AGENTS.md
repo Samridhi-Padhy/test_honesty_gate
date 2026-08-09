@@ -90,9 +90,8 @@ integration silently.
 - Primary build agent: **Cline** (VS Code extension), Plan-and-Act flow.
 - Models: NVIDIA Build for the heavy implementation loop, Google AI Studio
   (Gemini) for planning and quality-sensitive steps.
-- Antigravity may be used later as an independent second reviewer on
-  already-written code — not for initial authorship. If used, log it here
-  and in `AGENTS_AND_SKILLS.md` with what it reviewed.
+- Antigravity was initially used as an independent reviewer, but for round-2 feature work (per-file risk thresholds), we used a Plan-and-Act workflow: Antigravity proposed diffs in Plan mode, and a human explicitly reviewed and approved each diff before it was committed to the codebase.
+- Any time Antigravity is used for feature work, log it in `AGENTS_AND_SKILLS.md` with a summary of what was reviewed and approved.
 
 ## 10. Style and quality
 
