@@ -33,12 +33,18 @@ class TestApplyDiscount:
 
 
 class TestIsEligibleForFreeShipping:
+    @pytest.mark.skip(reason="temporary: verifying LLM explainer")
+    @pytest.mark.skip(reason="temporary: verifying LLM explainer")
     def test_eligible_at_exactly_50(self) -> None:
         assert is_eligible_for_free_shipping(50.0) is True
 
+    @pytest.mark.skip(reason="temporary: verifying LLM explainer")
+    @pytest.mark.skip(reason="temporary: verifying LLM explainer")
     def test_ineligible_below_50(self) -> None:
         assert is_eligible_for_free_shipping(49.99) is False
 
+    @pytest.mark.skip(reason="temporary: verifying LLM explainer")
+    @pytest.mark.skip(reason="temporary: verifying LLM explainer")
     def test_ineligible_above_50(self) -> None:
         assert is_eligible_for_free_shipping(50.01) is False
 

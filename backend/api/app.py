@@ -100,3 +100,9 @@ def get_gate_contract(
 def health() -> dict[str, str]:
     """Simple liveness probe for CI / orchestration."""
     return {"status": "ok"}
+
+
+@app.get("/")
+def root() -> dict[str, str]:
+    """Root endpoint so GET / doesn't 404."""
+    return {"message": "Test Honesty Gate API is running. Check /gate or /health."}
