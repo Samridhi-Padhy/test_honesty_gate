@@ -66,6 +66,7 @@ function App() {
       <VerdictCard
         verdict={data.verdict}
         survived={data.mutants_survived}
+        tested={data.mutants_tested}
         prId={data.pr_id}
       />
 
