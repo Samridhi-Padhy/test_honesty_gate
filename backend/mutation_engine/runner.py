@@ -175,7 +175,7 @@ def run_all_mutants() -> RunSummary:
     """Run all mutants against demo-repo and return the summary."""
     start = time.monotonic()
     results: list[MutantResult] = []
-    for mutant_id in MUTATION_TARGETS:
-        results.append(run_mutant(mutant_id, MUTATION_TARGETS[mutant_id]))
+    for mutant_id, target in MUTATION_TARGETS.items():
+        results.append(run_mutant(mutant_id, target))
     elapsed_ms = int((time.monotonic() - start) * 1000)
     return RunSummary(results=results, duration_ms=elapsed_ms)

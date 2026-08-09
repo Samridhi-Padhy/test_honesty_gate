@@ -26,6 +26,6 @@ def load_thresholds() -> dict[str, Any]:
             "default_kill_threshold": data.get("default_kill_threshold", 0.75),
             "file_thresholds": data.get("file_thresholds", {}),
         }
-    except Exception:
+    except Exception:  # noqa: BLE001 - fail closed on any error
         # Fail closed, never crash, never silently pass.
         return fallback
