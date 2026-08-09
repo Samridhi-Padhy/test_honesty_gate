@@ -60,15 +60,17 @@ def build_contract(pr_id: str, summary: RunSummary) -> dict[str, Any]:
         passed = kill_rate >= threshold
         if not passed:
             any_file_failed = True
-        
-        per_file.append({
-            "file": file_path,
-            "mutants_tested": tested,
-            "mutants_caught": caught,
-            "kill_rate": kill_rate,
-            "threshold": threshold,
-            "passed": passed,
-        })
+
+        per_file.append(
+            {
+                "file": file_path,
+                "mutants_tested": tested,
+                "mutants_caught": caught,
+                "kill_rate": kill_rate,
+                "threshold": threshold,
+                "passed": passed,
+            }
+        )
 
     verdict = "fail" if (summary.mutants_survived > 0 or any_file_failed) else "pass"
     return {
@@ -124,7 +126,7 @@ def render_markdown_summary(contract: dict[str, Any]) -> str:
                 f"- **{record['location']}** (`{record['operator']}`): "
                 f"{record['explanation']}"
             )
-            
+
     lines.append("")
     lines.append("### Per-file risk thresholds")
     lines.append("")
@@ -132,8 +134,10 @@ def render_markdown_summary(contract: dict[str, Any]) -> str:
         status = "PASS" if pf["passed"] else "FAIL"
         rate_pct = int(pf["kill_rate"] * 100)
         thresh_pct = int(pf["threshold"] * 100)
-        lines.append(f"- **{pf['file']}**: {rate_pct}% kill rate (needs {thresh_pct}%) - **{status}**")
-        
+        lines.append(
+            f"- **{pf['file']}**: {rate_pct}% kill rate (needs {thresh_pct}%) - **{status}**"
+        )
+
     return "\n".join(lines) + "\n"
 
 

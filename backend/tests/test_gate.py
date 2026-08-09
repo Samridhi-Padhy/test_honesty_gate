@@ -20,7 +20,9 @@ def _sample_summary() -> RunSummary:
             MutantResult("m4", "negate_boolean", "src/pricing.py:48", caught=True),
             MutantResult("m5", "drop_null_guard", "src/pricing.py:56", caught=True),
             MutantResult("m6", "negate_boolean", "src/notifications.py:2", caught=True),
-            MutantResult("m7", "drop_null_guard", "src/notifications.py:6", caught=True),
+            MutantResult(
+                "m7", "drop_null_guard", "src/notifications.py:6", caught=True
+            ),
         ],
         duration_ms=1830,
     )
@@ -121,11 +123,14 @@ class TestGateCheckCli:
 class TestPerFileThresholds:
     def test_file_at_or_above_threshold_passes(self, monkeypatch) -> None:
         # Mock load_thresholds to require 1.0 (100%) for pricing.py
-        monkeypatch.setattr("gate_service.gate.load_thresholds", lambda: {
-            "default_kill_threshold": 0.75,
-            "file_thresholds": {"src/pricing.py": 1.0}
-        })
-        
+        monkeypatch.setattr(
+            "gate_service.gate.load_thresholds",
+            lambda: {
+                "default_kill_threshold": 0.75,
+                "file_thresholds": {"src/pricing.py": 1.0},
+            },
+        )
+
         # summary has 1 mutant in pricing.py, caught=True -> 100% kill rate
         summary = RunSummary(
             results=[MutantResult("m1", "equality_flip", "src/pricing.py:28", True)],
@@ -139,11 +144,14 @@ class TestPerFileThresholds:
 
     def test_file_below_threshold_fails_overall(self, monkeypatch) -> None:
         # Mock load_thresholds to require 1.0 (100%) for pricing.py
-        monkeypatch.setattr("gate_service.gate.load_thresholds", lambda: {
-            "default_kill_threshold": 0.75,
-            "file_thresholds": {"src/pricing.py": 1.0}
-        })
-        
+        monkeypatch.setattr(
+            "gate_service.gate.load_thresholds",
+            lambda: {
+                "default_kill_threshold": 0.75,
+                "file_thresholds": {"src/pricing.py": 1.0},
+            },
+        )
+
         # summary has 2 mutants in pricing.py, 1 caught, 1 missed -> 50% kill rate
         summary = RunSummary(
             results=[
@@ -158,10 +166,12 @@ class TestPerFileThresholds:
 
     def test_missing_config_falls_back_to_defaults(self, monkeypatch, tmp_path) -> None:
         from gate_service.thresholds import load_thresholds
-        
+
         # Force the config file to seem non-existent
-        monkeypatch.setattr("gate_service.thresholds.CONFIG_PATH", tmp_path / "does_not_exist.json")
-        
+        monkeypatch.setattr(
+            "gate_service.thresholds.CONFIG_PATH", tmp_path / "does_not_exist.json"
+        )
+
         thresholds = load_thresholds()
         assert thresholds["default_kill_threshold"] == 0.75
         assert thresholds["file_thresholds"] == {}

@@ -1,4 +1,3 @@
-import React from "react";
 
 function FileRiskCard({ perFile }) {
   if (!perFile || perFile.length === 0) {
