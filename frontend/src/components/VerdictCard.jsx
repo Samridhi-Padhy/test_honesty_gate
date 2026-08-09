@@ -1,4 +1,4 @@
-function VerdictCard({ verdict, survived, prId }) {
+function VerdictCard({ verdict, survived, tested, prId }) {
   const blocked = verdict === "fail";
 
   return (
@@ -11,8 +11,8 @@ function VerdictCard({ verdict, survived, prId }) {
 
       <p className="verdict-reason">
         {blocked
-          ? `${survived} of the 5 seeded bugs were not caught by this pull request's tests. The tests run green, but they are not verifying behaviour.`
-          : "All 5 seeded bugs were caught. These tests are genuinely verifying behaviour, not just executing lines."}
+          ? `${survived} of the ${tested} seeded bugs were not caught by this pull request's tests. The tests run green, but they are not verifying behaviour.`
+          : `All ${tested} seeded bugs were caught. These tests are genuinely verifying behaviour, not just executing lines.`}
       </p>
 
       {prId && <p className="verdict-pr">Pull request: {prId}</p>}
