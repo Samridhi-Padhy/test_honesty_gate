@@ -26,10 +26,11 @@ class TestMockModeEndpoint:
             "mutants_caught",
             "mutants_survived",
             "results",
+            "per_file",
             "duration_ms",
         }
         assert contract["verdict"] == "fail"
-        assert contract["mutants_tested"] == 5
+        assert contract["mutants_tested"] == 7
         for record in contract["results"]:
             assert set(record.keys()) == {
                 "mutant_id",
@@ -85,9 +86,10 @@ class TestRealChainEndpoint:
             "mutants_caught",
             "mutants_survived",
             "results",
+            "per_file",
             "duration_ms",
         }
-        assert contract["mutants_tested"] == 5
+        assert contract["mutants_tested"] == 7
         for record in contract["results"]:
             assert set(record.keys()) == {
                 "mutant_id",
@@ -116,4 +118,4 @@ class TestRealChainEndpoint:
         assert survivors == []
         assert contract["verdict"] == "pass"
         assert contract["mutants_survived"] == 0
-        assert contract["mutants_caught"] == 5
+        assert contract["mutants_caught"] == 7

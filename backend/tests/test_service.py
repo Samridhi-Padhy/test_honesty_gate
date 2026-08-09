@@ -69,6 +69,7 @@ class TestExplainSurvivingMutants:
             "mutants_caught",
             "mutants_survived",
             "results",
+            "per_file",
             "duration_ms",
         }
         for record in result["results"]:

@@ -1,0 +1,6 @@
+{
+  "default_kill_threshold": 0.75,
+  "file_thresholds": {
+    "src/pricing.py": 1.0
+  }
+}

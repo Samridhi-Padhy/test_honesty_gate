@@ -14,6 +14,16 @@ const mockData = {
         "The AI test suite did not catch this off-by-one error. Add an assertion for the boundary case where x == 0."
     }
   ],
+  per_file: [
+    {
+      file: "src/pricing.py",
+      mutants_tested: 5,
+      mutants_caught: 4,
+      kill_rate: 0.8,
+      threshold: 1.0,
+      passed: false
+    }
+  ],
   duration_ms: 1830
 };
 

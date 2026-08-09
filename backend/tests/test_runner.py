@@ -94,8 +94,8 @@ class TestRunMutant:
         assert result.caught is False
         assert result.timed_out is True
         assert result.error == "pytest timed out"
-        # The timeout budget is 3.0s, so it should definitely finish before 5.0s
-        assert elapsed < 5.0
+        # The timeout budget is 10.0s, so it should definitely finish before 12.0s
+        assert elapsed < 12.0
 
     def test_operator_error_fails_closed(self) -> None:
         """A bad target location is a hard failure, never a silent pass."""
@@ -108,8 +108,8 @@ class TestRunMutant:
 class TestRunAllMutants:
     def test_runs_all_five(self) -> None:
         summary = run_all_mutants()
-        assert summary.mutants_tested == 5
-        assert summary.mutants_caught == 5
+        assert summary.mutants_tested == 7
+        assert summary.mutants_caught == 7
         assert summary.mutants_survived == 0
 
     def test_source_restored_after_all(self) -> None:
