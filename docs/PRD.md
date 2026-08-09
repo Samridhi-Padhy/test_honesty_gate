@@ -35,6 +35,12 @@ Standard code coverage metrics (e.g., lines covered) are insufficient because th
   - Given a PR modifying `demo-repo/src/pricing.py`, when the mutation engine runs, it injects specific logic flaws (e.g., changing `<` to `<=`).
   - If the test suite fails to assert the exact boundary condition, the gate identifies the exact line in `pricing.py` and blocks the merge.
 
+**6. Per-File Risk Thresholds**
+*As a reviewer, I want money-logic files to require a stricter mutation-kill rate than the rest of the codebase, so a weak test on critical financial code can't hide behind a passing average.*
+- **Acceptance Criteria:**
+  - Given a run where the overall kill rate is above the default threshold, if any single file's kill rate is below its explicitly configured threshold, then the gate returns a `fail` verdict.
+  - When a file fails its specific threshold, the CI markdown summary explicitly names the specific failing file, its kill rate, and its required threshold.
+
 ## Traceability Table
 
 | User Story | Implementing file(s) | Test file(s) |
@@ -44,6 +50,7 @@ Standard code coverage metrics (e.g., lines covered) are insufficient because th
 | 3. CI Visibility | `backend/gate_service/gate.py` | `backend/tests/test_gate.py` |
 | 4. Visual Mutation Dashboard | `frontend/src/App.jsx`, `frontend/src/components/VerdictCard.jsx`, `frontend/src/components/MutantCard.jsx`, `frontend/src/components/StatsCard.jsx` | N/A (Frontend uses Playwright e2e in CI) |
 | 5. Protecting Money-Critical Logic | `backend/mutation_engine/operators.py`, `backend/mutation_engine/runner.py`, `demo-repo/src/pricing.py` | `backend/tests/test_operators.py`, `backend/tests/test_runner.py` |
+| 6. Per-File Risk Thresholds | `gate.config.json`, `backend/gate_service/gate.py`, `backend/gate_service/thresholds.py`, `demo-repo/src/notifications.py` | `backend/tests/test_gate.py` |
 
 ## MVP Scope Lock
 To prove the concept quickly and deterministically, the MVP is strictly limited to 5 hardcoded operators applied to a specific demo project (`demo-repo`):
