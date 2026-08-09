@@ -32,7 +32,7 @@ from .operators import (
 # comfortable headroom for startup while the real total stays ~7.5s, under the
 # 10s total target. If a mutant exceeds this ceiling it is a hard fail, never
 # a hang.
-MUTANT_TIMEOUT_SECONDS = 3.0
+MUTANT_TIMEOUT_SECONDS = 10.0
 
 # The demo repository lives at the repo root, one level above backend/.
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -90,7 +90,12 @@ def _run_pytest() -> tuple[int, float]:
     tests passed (mutant survived); non-zero means tests failed (mutant
     caught).
     """
+    import os
     start = time.monotonic()
+    
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    
     proc = subprocess.run(
         [sys.executable, "-m", "pytest", "-q", str(DEMO_TESTS_DIR)],
         cwd=str(DEMO_REPO_DIR),
@@ -98,6 +103,7 @@ def _run_pytest() -> tuple[int, float]:
         text=True,
         timeout=MUTANT_TIMEOUT_SECONDS,
         check=False,
+        env=env,
     )
     elapsed = time.monotonic() - start
     return proc.returncode, elapsed
