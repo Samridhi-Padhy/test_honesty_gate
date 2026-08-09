@@ -1,3 +1,6 @@
+while True:
+    pass
+
 """Pricing logic for the demo repository.
 
 This module is the mutation target for the test-honesty gate. Each function

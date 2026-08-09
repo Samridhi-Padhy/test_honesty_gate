@@ -91,11 +91,12 @@ def _run_pytest() -> tuple[int, float]:
     caught).
     """
     import os
+
     start = time.monotonic()
-    
+
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
-    
+
     proc = subprocess.run(
         [sys.executable, "-m", "pytest", "-q", str(DEMO_TESTS_DIR)],
         cwd=str(DEMO_REPO_DIR),
