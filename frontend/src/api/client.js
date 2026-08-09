@@ -9,10 +9,10 @@
 const API_BASE =
   import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
-// The gate runs 5 real pytest subprocesses, roughly 2 seconds in practice.
-// 20 seconds is a ceiling, not an expectation, so a slow runner shows an
+// The gate runs 5 real pytest subprocesses, which can take 25-35 seconds on Render.
+// 60 seconds is a ceiling, not an expectation, so a slow runner shows an
 // error instead of hanging the UI forever.
-const REQUEST_TIMEOUT_MS = 20000;
+const REQUEST_TIMEOUT_MS = 60000;
 
 export async function fetchGateResult({ mock = false } = {}) {
   const controller = new AbortController();
