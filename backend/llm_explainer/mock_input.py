@@ -48,10 +48,11 @@ def mock_contract() -> dict[str, Any]:
         {
             "pr_id": "mock-pr-1",
             "verdict": "fail",
-            "mutants_tested": 5,
-            "mutants_caught": 2,
+            "mutants_tested": 7,
+            "mutants_caught": 4,
             "mutants_survived": 3,
             "results": MOCK_SURVIVING_MUTANTS,
+            "per_file": [],
             "duration_ms": 1830,
         }
     )

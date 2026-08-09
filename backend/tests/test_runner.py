@@ -108,8 +108,8 @@ class TestRunMutant:
 class TestRunAllMutants:
     def test_runs_all_five(self) -> None:
         summary = run_all_mutants()
-        assert summary.mutants_tested == 5
-        assert summary.mutants_caught == 5
+        assert summary.mutants_tested == 7
+        assert summary.mutants_caught == 7
         assert summary.mutants_survived == 0
 
     def test_source_restored_after_all(self) -> None:

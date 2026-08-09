@@ -166,14 +166,16 @@ MUTATION_TARGETS: dict[str, Location] = {
     "m3": Location("src/pricing.py", 37),  # range(n)  (loop bound)
     "m4": Location("src/pricing.py", 48),  # return bool (validator)
     "m5": Location("src/pricing.py", 58),  # is None guard
+    "m6": Location("src/notifications.py", 2),
+    "m7": Location("src/notifications.py", 5),
 }
 
 
 def run_all_mutants() -> RunSummary:
-    """Run all 5 mutants against demo-repo and return the summary."""
+    """Run all mutants against demo-repo and return the summary."""
     start = time.monotonic()
     results: list[MutantResult] = []
-    for mutant_id in ("m1", "m2", "m3", "m4", "m5"):
+    for mutant_id in MUTATION_TARGETS:
         results.append(run_mutant(mutant_id, MUTATION_TARGETS[mutant_id]))
     elapsed_ms = int((time.monotonic() - start) * 1000)
     return RunSummary(results=results, duration_ms=elapsed_ms)

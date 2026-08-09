@@ -110,8 +110,8 @@ class TestDropNullGuard:
 
 
 class TestOperatorRegistry:
-    def test_exactly_five_operators(self) -> None:
-        assert set(OPERATORS.keys()) == {"m1", "m2", "m3", "m4", "m5"}
+    def test_exactly_seven_operators(self) -> None:
+        assert set(OPERATORS.keys()) == {"m1", "m2", "m3", "m4", "m5", "m6", "m7"}
 
     def test_each_operator_is_callable(self) -> None:
         for operator in OPERATORS.values():

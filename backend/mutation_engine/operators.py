@@ -221,4 +221,6 @@ OPERATORS: dict[str, Callable[[str, Location], AppliedMutation]] = {
     "m3": off_by_one,
     "m4": negate_boolean,
     "m5": drop_null_guard,
+    "m6": negate_boolean,
+    "m7": drop_null_guard,
 }

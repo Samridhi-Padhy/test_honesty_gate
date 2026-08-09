@@ -14,6 +14,7 @@ from typing import Any
 
 from llm_explainer.service import explain_surviving_mutants
 from mutation_engine.runner import RunSummary, run_all_mutants
+from gate_service.thresholds import load_thresholds
 
 
 def build_contract(pr_id: str, summary: RunSummary) -> dict[str, Any]:
@@ -32,7 +33,43 @@ def build_contract(pr_id: str, summary: RunSummary) -> dict[str, Any]:
         }
         for r in summary.results
     ]
-    verdict = "fail" if summary.mutants_survived > 0 else "pass"
+
+    thresholds_config = load_thresholds()
+    default_kill = thresholds_config["default_kill_threshold"]
+    file_thresholds = thresholds_config["file_thresholds"]
+
+    # Group results by file
+    file_stats: dict[str, dict[str, int]] = {}
+    for r in summary.results:
+        # format is "path:line", split on the last ":"
+        file_path = r.location.rsplit(":", 1)[0]
+        if file_path not in file_stats:
+            file_stats[file_path] = {"tested": 0, "caught": 0}
+        file_stats[file_path]["tested"] += 1
+        if r.caught:
+            file_stats[file_path]["caught"] += 1
+
+    per_file = []
+    any_file_failed = False
+    for file_path, stats in file_stats.items():
+        tested = stats["tested"]
+        caught = stats["caught"]
+        kill_rate = caught / tested if tested > 0 else 0.0
+        threshold = file_thresholds.get(file_path, default_kill)
+        passed = kill_rate >= threshold
+        if not passed:
+            any_file_failed = True
+        
+        per_file.append({
+            "file": file_path,
+            "mutants_tested": tested,
+            "mutants_caught": caught,
+            "kill_rate": kill_rate,
+            "threshold": threshold,
+            "passed": passed,
+        })
+
+    verdict = "fail" if (summary.mutants_survived > 0 or any_file_failed) else "pass"
     return {
         "pr_id": pr_id,
         "verdict": verdict,
@@ -40,6 +77,7 @@ def build_contract(pr_id: str, summary: RunSummary) -> dict[str, Any]:
         "mutants_caught": summary.mutants_caught,
         "mutants_survived": summary.mutants_survived,
         "results": results,
+        "per_file": per_file,
         "duration_ms": summary.duration_ms,
     }
 
@@ -85,6 +123,16 @@ def render_markdown_summary(contract: dict[str, Any]) -> str:
                 f"- **{record['location']}** (`{record['operator']}`): "
                 f"{record['explanation']}"
             )
+            
+    lines.append("")
+    lines.append("### Per-file risk thresholds")
+    lines.append("")
+    for pf in contract.get("per_file", []):
+        status = "PASS" if pf["passed"] else "FAIL"
+        rate_pct = int(pf["kill_rate"] * 100)
+        thresh_pct = int(pf["threshold"] * 100)
+        lines.append(f"- **{pf['file']}**: {rate_pct}% kill rate (needs {thresh_pct}%) - **{status}**")
+        
     return "\n".join(lines) + "\n"
 
 
