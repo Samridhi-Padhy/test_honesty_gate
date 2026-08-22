@@ -1,7 +1,7 @@
 # Test Honesty Gate
 Keeps test suites honest by proving they actually catch bugs.
 
-Built for Deploy or Die — HowToAlgo x GDG on Campus KIIT, Track B (Developer Productivity Tools).
+Built for Deploy or redacted — HowToAlgo x GDG on Campus KIIT, Track B (Developer Productivity Tools).
 
 🔗 **Live dashboard:** [test-honesty-gate.vercel.app](https://test-honesty-gate.vercel.app/) — no install needed. Click through the live AI Test Validation Dashboard to see real mutations evaluated against a test suite in real-time.
 
